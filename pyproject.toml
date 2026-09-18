@@ -1,0 +1,28 @@
+[project]
+name = "secure-rag-poc"
+version = "0.1.0"
+description = "security-focused RAG proof of concept"
+requires-python = ">=3.11"
+
+dependencies = [
+    "chromadb",
+    "pypdf",
+    "sentence-transformers",
+    "ollama",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "ruff",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
