@@ -18,3 +18,9 @@ class Chunk:
     chunk_index: int
     clearance: int
     trust: int
+
+
+@dataclass
+class User:
+    id: str
+    clearance: int
