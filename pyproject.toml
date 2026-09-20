@@ -7,6 +7,8 @@ requires-python = ">=3.11"
 dependencies = [
     "chromadb",
     "pypdf",
+    "pymupdf",
+    "pytesseract",
     "sentence-transformers",
     "ollama",
 ]
@@ -15,6 +17,8 @@ dependencies = [
 dev = [
     "pytest",
     "ruff",
+    "reportlab",
+    "pillow",
 ]
 
 [tool.pytest.ini_options]
