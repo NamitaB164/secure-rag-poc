@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
@@ -8,6 +8,7 @@ class Document:
     content: str
     clearance: int
     trust: int
+    metadata: dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -18,6 +19,7 @@ class Chunk:
     chunk_index: int
     clearance: int
     trust: int
+    metadata: dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
