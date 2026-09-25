@@ -281,7 +281,7 @@ def test_parse_pdf_table_preserves_page_number(tmp_path: Path):
 
     tables = [element for element in elements if element.type == "table"]
 
-    assert tables[0].page == 1
+    assert tables[0].metadata["page"] == 1
 
 
 def test_parse_pdf_table_has_dimensions(tmp_path: Path):
@@ -336,7 +336,7 @@ def test_parse_pdf_image_preserves_page_number(tmp_path: Path):
 
     images = [element for element in elements if element.type == "image"]
 
-    assert images[0].page == 1
+    assert images[0].metadata["page"] == 1
 
 
 def test_parse_pdf_image_has_metadata(tmp_path: Path):
@@ -457,4 +457,4 @@ def test_parse_pdf_ocr_preserves_page_number(tmp_path: Path):
         if element.type == "text" and "Secure RAG OCR Test" in element.content
     ]
 
-    assert text_elements[0].page == 1
+    assert text_elements[0].metadata["page"] == 1

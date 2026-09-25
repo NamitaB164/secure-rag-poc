@@ -5,18 +5,18 @@ import pymupdf
 import pytesseract
 from PIL import Image
 
-from secure_rag.ingestion.parsers.pdf_elements import PDFElement
+from secure_rag.ingestion.elements import ContentElement
 
 
 def parse_pdf(
     path: Path,
     asset_dir: Path | None = None,
-) -> list[PDFElement]:
+) -> list[ContentElement]:
     if not path.exists():
         raise FileNotFoundError(path)
 
     document = pymupdf.open(path)
-    elements: list[PDFElement] = []
+    elements: list[ContentElement] = []
 
     for page_number, page in enumerate(document, start=1):
         tables = page.find_tables()
@@ -24,14 +24,17 @@ def parse_pdf(
         for table in tables.tables:
             rows = table.extract()
 
-            content = "\n".join(" | ".join(cell or "" for cell in row) for row in rows)
+            content = "\n".join(
+                " | ".join(cell or "" for cell in row)
+                for row in rows
+            )
 
             elements.append(
-                PDFElement(
+                ContentElement(
                     type="table",
-                    page=page_number,
                     content=content,
                     metadata={
+                        "page": page_number,
                         "rows": len(rows),
                         "columns": max(
                             (len(row) for row in rows),
@@ -46,6 +49,7 @@ def parse_pdf(
             image_info = document.extract_image(xref)
 
             metadata = {
+                "page": page_number,
                 "image_index": image_index,
                 "width": image_info["width"],
                 "height": image_info["height"],
@@ -55,10 +59,14 @@ def parse_pdf(
 
             if asset_dir is not None:
                 document_asset_dir = asset_dir / path.stem
-                document_asset_dir.mkdir(parents=True, exist_ok=True)
+                document_asset_dir.mkdir(
+                    parents=True,
+                    exist_ok=True,
+                )
 
                 asset_path = (
-                    document_asset_dir / f"page-{page_number}-image-{image_index}"
+                    document_asset_dir
+                    / f"page-{page_number}-image-{image_index}"
                     f".{image_info['ext']}"
                 )
 
@@ -66,9 +74,8 @@ def parse_pdf(
                 metadata["asset_path"] = str(asset_path)
 
             elements.append(
-                PDFElement(
+                ContentElement(
                     type="image",
-                    page=page_number,
                     content="",
                     metadata=metadata,
                 )
@@ -89,24 +96,28 @@ def parse_pdf(
 
             if text.strip() and not inside_table:
                 elements.append(
-                    PDFElement(
+                    ContentElement(
                         type="text",
-                        page=page_number,
                         content=text,
+                        metadata={
+                            "page": page_number,
+                        },
                     )
                 )
 
-        has_text = any(
-            element.type == "text" and element.page == page_number
+        page_has_text = any(
+            element.type == "text"
+            and element.metadata.get("page") == page_number
             for element in elements
         )
 
-        has_table = any(
-            element.type == "table" and element.page == page_number
+        page_has_table = any(
+            element.type == "table"
+            and element.metadata.get("page") == page_number
             for element in elements
         )
 
-        if not has_text and not has_table:
+        if not page_has_text and not page_has_table:
             pixmap = page.get_pixmap(
                 matrix=pymupdf.Matrix(2, 2),
             )
@@ -119,11 +130,13 @@ def parse_pdf(
 
             if ocr_text.strip():
                 elements.append(
-                    PDFElement(
+                    ContentElement(
                         type="text",
-                        page=page_number,
                         content=ocr_text,
-                        metadata={"source": "ocr"},
+                        metadata={
+                            "page": page_number,
+                            "source": "ocr",
+                        },
                     )
                 )
 
