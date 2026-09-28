@@ -143,7 +143,7 @@ def test_parse_markdown_table_preserves_metadata(tmp_path: Path):
         if element.type == "table"
     )
 
-    assert table.metadata["format"] == "markdown"
+    assert table.metadata["format"] == "md"
     assert table.metadata["rows"] == 2
     assert table.metadata["columns"] == 2
 

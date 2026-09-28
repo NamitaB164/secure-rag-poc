@@ -38,7 +38,7 @@ def parse_markdown(path: Path) -> list[ContentElement]:
                     type="text",
                     content=heading_text,
                     metadata={
-                        "format": "markdown",
+                        "format": "md",
                         "heading": heading_text,
                         "heading_level": heading_level,
                     },
@@ -67,7 +67,7 @@ def parse_markdown(path: Path) -> list[ContentElement]:
 
             if rows:
                 metadata: dict[str, object] = {
-                    "format": "markdown",
+                    "format": "md",
                     "rows": len(rows),
                     "columns": len(rows[0]),
                 }
@@ -109,7 +109,7 @@ def parse_markdown(path: Path) -> list[ContentElement]:
             index += 1
 
         metadata = {
-            "format": "markdown",
+            "format": "md",
         }
 
         if current_heading is not None:
