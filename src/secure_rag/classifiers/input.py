@@ -50,6 +50,8 @@ class InputClassifier:
         )
 
         content = _extract_response_content(response)
+        print("RAW CLASSIFIER RESULT:")
+        print(content)
 
         return _parse_result(content)
 
