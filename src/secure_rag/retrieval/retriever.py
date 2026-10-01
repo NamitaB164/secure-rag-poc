@@ -1,4 +1,4 @@
-from secure_rag.embeddings import SentenceTransformerEmbedding
+from secure_rag.embeddings import EmbeddingModel
 from secure_rag.models import Chunk, User
 from secure_rag.retrieval.acl import filter_authorized_chunks
 from secure_rag.vectorstore import ChromaVectorStore
@@ -7,7 +7,7 @@ from secure_rag.vectorstore import ChromaVectorStore
 class SecureRetriever:
     def __init__(
         self,
-        embedding_model: SentenceTransformerEmbedding,
+        embedding_model: EmbeddingModel,
         vector_store: ChromaVectorStore,
         trust_threshold: int = 0,
     ) -> None:
@@ -21,11 +21,16 @@ class SecureRetriever:
         user: User,
         n_results: int = 5,
     ) -> list[Chunk]:
-        query_embedding = self.embedding_model.embed(query)
+        query_embedding = self.embedding_model.embed_query(query)
 
         result = self.vector_store.search(
             query_embedding=query_embedding,
             n_results=n_results,
+            where={
+                "clearance": {
+                    "$lte": user.clearance,
+                }
+            },
         )
 
         candidates = self._result_to_chunks(result)
