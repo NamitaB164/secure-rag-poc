@@ -1,8 +1,11 @@
 from io import BytesIO
 from pathlib import Path
 
+# pyrefly: ignore [missing-import]
 import pymupdf
+# pyrefly: ignore [missing-import]
 import pytesseract
+# pyrefly: ignore [missing-import]
 from PIL import Image
 
 from secure_rag.ingestion.elements import ContentElement
