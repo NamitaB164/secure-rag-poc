@@ -56,14 +56,16 @@ class ChromaVectorStore:
         )
 
     def search(
-        self,
-        query_embedding: list[float],
-        n_results: int = 5,
-    ) -> dict:
+    self,
+    query_embedding: list[float],
+    n_results: int = 5,
+    where: dict | None = None,
+) -> dict:
         if n_results <= 0:
             raise ValueError("n_results must be greater than 0.")
 
         return self.collection.query(
             query_embeddings=[query_embedding],
             n_results=n_results,
-        )
+            where=where,
+    )
