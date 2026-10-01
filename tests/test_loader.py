@@ -1,8 +1,11 @@
 
 from pathlib import Path
 
+# pyrefly: ignore [missing-import]
 import pytest
+# pyrefly: ignore [missing-import]
 from PIL import Image, ImageDraw, ImageFont
+# pyrefly: ignore [missing-import]
 from pypdf import PdfWriter
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
@@ -173,6 +176,29 @@ def test_load_markdown_file(tmp_path: Path):
 # ---------------------------------------------------------------------------
 # Loader
 # ---------------------------------------------------------------------------
+def test_load_pdf_passes_asset_dir(tmp_path: Path):
+    file_path = tmp_path / "image.pdf"
+    asset_dir = tmp_path / "assets"
+
+    create_image_pdf(file_path)
+
+    elements = load_document(
+        file_path,
+        asset_dir=asset_dir,
+    )
+
+    images = [
+        element
+        for element in elements
+        if element.type == "image"
+    ]
+
+    assert len(images) == 1
+
+    asset_path = Path(images[0].metadata["asset_path"])
+
+    assert asset_path.exists()
+    assert asset_path.parent == asset_dir / file_path.stem
 
 
 def test_load_unsupported_file(tmp_path: Path):
