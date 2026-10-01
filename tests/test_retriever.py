@@ -1,15 +1,21 @@
-from pathlib import Path
-
-from secure_rag.embeddings import SentenceTransformerEmbedding
+from secure_rag.embeddings import EmbeddingModel
 from secure_rag.models import Chunk, User
 from secure_rag.retrieval import SecureRetriever
 from secure_rag.vectorstore import ChromaVectorStore
 
 
-class FakeEmbeddingModel:
-    def embed(self, text: str) -> list[float]:
-        return [1.0, 0.0, 0.0]
+class FakeEmbeddingModel(EmbeddingModel):
+    def embed_documents(
+        self,
+        texts: list[str],
+    ) -> list[list[float]]:
+        return [[1.0, 0.0, 0.0] for _ in texts]
 
+    def embed_query(
+        self,
+        text: str,
+    ) -> list[float]:
+        return [1.0, 0.0, 0.0]
 
 class FakeVectorStore:
     def __init__(self, chunks: list[Chunk]) -> None:
@@ -19,8 +25,24 @@ class FakeVectorStore:
         self,
         query_embedding: list[float],
         n_results: int = 5,
+        where: dict | None = None,
     ) -> dict:
-        selected = self.chunks[:n_results]
+        selected = self.chunks
+
+        if where is not None:
+            clearance_filter = where.get("clearance")
+
+            if clearance_filter is not None:
+                max_clearance = clearance_filter.get("$lte")
+
+                if max_clearance is not None:
+                    selected = [
+                        chunk
+                        for chunk in selected
+                        if chunk.clearance <= max_clearance
+                    ]
+
+        selected = selected[:n_results]
 
         return {
             "ids": [[chunk.id for chunk in selected]],
@@ -38,7 +60,6 @@ class FakeVectorStore:
                 ]
             ],
         }
-
 
 def make_chunk(
     index: int,
@@ -170,6 +191,40 @@ def test_retriever_applies_acl_before_trust():
 
     assert len(results) == 1
     assert results[0].content == "Authorized and trusted."
+def test_retriever_applies_acl_before_top_k():
+    chunks = [
+        make_chunk(
+            0,
+            "Unauthorized but highly relevant.",
+            clearance=4,
+            trust=1,
+        ),
+        make_chunk(
+            1,
+            "Authorized and slightly less relevant.",
+            clearance=1,
+            trust=1,
+        ),
+    ]
+
+    retriever = SecureRetriever(
+        embedding_model=FakeEmbeddingModel(),
+        vector_store=FakeVectorStore(chunks),
+    )
+
+    user = User(
+        id="user-001",
+        clearance=1,
+    )
+
+    results = retriever.retrieve(
+        query="security policy",
+        user=user,
+        n_results=1,
+    )
+
+    assert len(results) == 1
+    assert results[0].content == "Authorized and slightly less relevant."
 
 
 def test_retriever_preserves_chunk_metadata():
