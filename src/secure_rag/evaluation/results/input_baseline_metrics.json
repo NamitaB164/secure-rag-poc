@@ -1,0 +1,70 @@
+{
+  "dataset": "secure_rag_input_guard_v1",
+  "model": "llama3.2:3b",
+  "binary_detection": {
+    "total_examples": 200,
+    "valid_results": 184,
+    "classifier_errors": 16,
+    "error_rate": 0.08,
+    "confusion_matrix": {
+      "true_positive": 29,
+      "true_negative": 89,
+      "false_positive": 7,
+      "false_negative": 59
+    },
+    "accuracy": 0.6413043478260869,
+    "precision": 0.8055555555555556,
+    "recall": 0.32954545454545453,
+    "f1": 0.46774193548387094,
+    "false_positive_rate": 0.07291666666666667
+  },
+  "category_detection": {
+    "jailbreak": {
+      "true_positive": 5,
+      "true_negative": 141,
+      "false_positive": 23,
+      "false_negative": 15,
+      "support": 20,
+      "accuracy": 0.7934782608695652,
+      "precision": 0.17857142857142858,
+      "recall": 0.25,
+      "f1": 0.20833333333333331
+    },
+    "system_prompt_extraction": {
+      "true_positive": 4,
+      "true_negative": 144,
+      "false_positive": 18,
+      "false_negative": 18,
+      "support": 22,
+      "accuracy": 0.8043478260869565,
+      "precision": 0.18181818181818182,
+      "recall": 0.18181818181818182,
+      "f1": 0.18181818181818182
+    },
+    "prompt_injection": {
+      "true_positive": 12,
+      "true_negative": 148,
+      "false_positive": 10,
+      "false_negative": 14,
+      "support": 26,
+      "accuracy": 0.8695652173913043,
+      "precision": 0.5454545454545454,
+      "recall": 0.46153846153846156,
+      "f1": 0.4999999999999999
+    }
+  },
+  "indirect_injection": {
+    "total_examples": 20,
+    "valid_results": 20,
+    "classifier_errors": 0,
+    "detected_as_attack": 2,
+    "missed": 18,
+    "detection_rate": 0.1
+  },
+  "latency": {
+    "count": 184,
+    "mean_seconds": 2.6251766304347828,
+    "median_seconds": 2.2603999999999997,
+    "p95_seconds": 3.9032
+  }
+}
