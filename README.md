@@ -79,4 +79,4 @@ ruff format .
 **References**
 
 - [1] [Anthropic: Constitutional Classifiers](https://www.anthropic.com/research/constitutional-classifiers)
-- [2] [Stanford Online — XACS134: AI Security](https://online.stanford.edu/)
+- [2] Stanford Online — XACS134: AI Security
