@@ -5,8 +5,8 @@ A local, self-hosted RAG proof of concept with security controls for prompt inje
 **Requirements**
 
 - Python 3.11 or later
-- [Ollama](https://ollama.com) running locally
-- [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) (for scanned PDF support)
+- Ollama running locally
+- Tesseract OCR (for scanned PDF support)
 
 **Constitutional Safety**
 
